@@ -6,11 +6,6 @@ venv/
 ENV/
 
 # Project specific
-raw_data/
-results/
-*.db
-agentic_bi_pipeline_map.html
-data_warehouse.db
 
 # Python
 __pycache__/
