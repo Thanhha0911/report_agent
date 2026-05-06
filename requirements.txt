@@ -1,0 +1,8 @@
+crewai[google-genai]
+crewai_tools
+duckdb
+pandas
+matplotlib
+seaborn
+python-dotenv
+streamlit

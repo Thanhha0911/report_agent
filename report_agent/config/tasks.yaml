@@ -1,0 +1,42 @@
+prompt_evaluation_task:
+  description: >
+    1. Read 'business_goal.md' and 'DATA_DICTIONARY.md' in the 'knowledge' folder to understand the context.
+    2. Analyze the user's prompt: '{user_prompt}'
+    3. Evaluate its complexity. If it's a simple lookup, state the metric to find.
+    4. If it's complex (e.g., "why are sales dropping?", "should we prioritize X or Y?"), break it down into 3-5 specific analytical questions.
+    5. Identify which schema layer (Mart, Intermediate, Staging) likely contains the answer.
+  expected_output: >
+    A structured markdown document containing:
+    - Understanding of the Prompt.
+    - Complexity Assessment.
+    - Step-by-Step Analysis Plan for the Data Analyst (including suggested tables).
+  agent: router_agent
+
+data_extraction_task:
+  description: >
+    1. Receive the Analysis Plan.
+    2. Use the DuckDBQueryTool to run 'SHOW TABLES' and 'DESCRIBE <table>' to understand the schema.
+    3. Execute the necessary SQL queries to extract data.
+    4. Prioritize Mart Layer tables. If the required dimensions/metrics aren't there, use Intermediate/Staging layers.
+    5. Ensure the queries are accurate and handle DuckDB syntax.
+  expected_output: >
+    A detailed summary of the SQL query results, structured in markdown tables or bullet points.
+    Must contain all the numerical facts and dimensions required to answer the user's prompt.
+  agent: data_analyst
+
+reporting_task:
+  description: >
+    1. Receive the raw data results.
+    2. Generate a compelling Narrative that answers the user's original prompt: '{user_prompt}'.
+    3. Ensure the Narrative is written in {language} with a {tone_of_voice} tone.
+    4. If necessary, write a standalone Python script to generate a visualization (matplotlib/seaborn) of the key findings. Save the chart as a PNG file strictly inside the '{report_folder}' directory, and run the script using the PythonExecutionTool.
+    5. Provide 2-3 actionable Recommendations based on the data.
+    6. Use the FileWriterTool to save the final markdown report as 'final_report.md' inside the '{report_folder}' directory.
+  expected_output: >
+    A final polished Markdown report saved to '{report_folder}/final_report.md'. 
+    The report must include:
+    - Executive Summary / Narrative.
+    - Key Findings (with data points).
+    - Image links to any generated charts (e.g., `![Chart Name]({report_folder}/chart.png)`).
+    - Actionable Recommendations.
+  agent: data_storyteller
